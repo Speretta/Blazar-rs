@@ -1,32 +1,46 @@
-use crate::raw_packet::packet::RawPacket;
+use crate::raw_packet::{
+    packet::RawPacketCreator, reader::RawPacketFieldRead, writer::RawPacketFieldWrite,
+};
 
 #[test]
-fn creation() {
-    assert!(RawPacket::new(0).as_bytes() == [0]);
+fn creation_reader() {
+    let buffer = [1, 0];
+    let packet = RawPacketCreator::new_reader().build(&buffer);
+    dbg!(&packet);
+    assert!(packet.to_bytes() == buffer)
 }
 
 #[test]
-fn write_varint() {
-    assert!(RawPacket::new(0).write_varint(-31).as_bytes() == [0, 225, 255, 255, 255, 15]);
+fn big_reader() {
+    let buffer = [
+        16, 0, 251, 5, 9, 108, 111, 99, 97, 108, 104, 111, 115, 116, 99, 221, 1,
+    ];
+    let packet = RawPacketCreator::new_reader()
+        .add_field(RawPacketFieldRead::VARINT)
+        .add_field(RawPacketFieldRead::STRING)
+        .add_field(RawPacketFieldRead::USHORT)
+        .add_field(RawPacketFieldRead::VARINT)
+        .build(&buffer);
+    assert!(packet.to_bytes() == buffer)
 }
 
 #[test]
-fn write_varlong() {
-    assert!(
-        RawPacket::new(0).write_varlong(-31).as_bytes()
-            == [0, 225, 255, 255, 255, 255, 255, 255, 255, 255, 1]
-    );
+fn creation_writer() {
+    let buffer = [1, 0];
+    let packet = RawPacketCreator::new_writer(0).build();
+    assert!(packet.to_bytes() == buffer)
 }
 
 #[test]
-fn write_string() {
-    assert!(
-        RawPacket::new(0).write_string("blazar-rs").as_bytes()
-            == [0, 9, 98, 108, 97, 122, 97, 114, 45, 114, 115]
-    );
-}
-
-#[test]
-fn write_bytes() {
-    assert!(RawPacket::new(0).write_be_bytes(&[1, 2, 3]).as_bytes() == [0, 1, 2, 3]);
+fn big_writer() {
+    let buffer = [
+        16, 0, 251, 5, 9, 108, 111, 99, 97, 108, 104, 111, 115, 116, 99, 221, 1,
+    ];
+    let packet = RawPacketCreator::new_writer(0)
+        .add_field(RawPacketFieldWrite::VARINT(763))
+        .add_field(RawPacketFieldWrite::STRING(String::from("localhost")))
+        .add_field(RawPacketFieldWrite::USHORT(25565))
+        .add_field(RawPacketFieldWrite::VARINT(1))
+        .build();
+    assert!(packet.to_bytes() == buffer)
 }

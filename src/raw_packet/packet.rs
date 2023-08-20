@@ -1,44 +1,84 @@
-use super::types::{VarInt, VarLong};
+use super::{
+    reader::RawPacketReader,
+    types::{VarInt, VarLong},
+    writer::RawPacketWriter,
+};
 
+pub struct RawPacketCreator {}
 
+impl RawPacketCreator {
+    pub fn new_reader() -> RawPacketReader {
+        RawPacketReader::new()
+    }
 
-
-pub struct RawPacket{
-    vec: Vec<u8>
+    pub fn new_writer(packet_id: i32) -> RawPacketWriter {
+        RawPacketWriter::new(packet_id)
+    }
 }
 
+#[derive(Debug)]
+pub struct RawPacket {
+    fields: Vec<RawPacketField>,
+}
 
-impl RawPacket{
-    pub fn new(packet_id: i32) -> Self{
-        assert!(packet_id >= 0, "Packet ID must not be negative");
-        let builder = RawPacket { vec: Vec::new() };
-        builder.write_varint(packet_id)
+impl RawPacket {
+    pub(super) fn new(fields: Vec<RawPacketField>) -> Self {
+        RawPacket { fields }
     }
 
-    pub fn write_be_bytes(mut self, bytes: &[u8]) -> Self{
-        self.vec.extend_from_slice(bytes);
-        self
+    pub fn get_packet_id(&self) -> u32 {
+        if let Some(RawPacketField::VARINT(id)) = self.fields.get(0) {
+            *id as u32
+        } else {
+            0
+        }
     }
 
-    pub fn write_string<S: Into<String>>(mut self, text: S) -> Self{
-        let text: String = text.into();
-        VarInt::write_varint(&mut self.vec, text.len() as i32);
-        self.write_be_bytes(text.as_bytes())
-    }
-
-    pub fn write_varint(mut self, integer32: i32) -> Self{
-        VarInt::write_varint(&mut self.vec, integer32);
-        self
-    }
-
-    pub fn write_varlong(mut self, integer64: i64) -> Self{
-        VarLong::write_varlong(&mut self.vec, integer64);
-        self
+    pub fn get_field(&self, index: usize) -> Option<&RawPacketField> {
+        self.fields.get(index + 1)
     }
 
     #[inline]
-    pub fn as_bytes(&self) -> &[u8] {
-        &self.vec
+    pub fn to_bytes(&self) -> Vec<u8> {
+        let mut bytes = Vec::new();
+        for field in &self.fields {
+            match field {
+                RawPacketField::BOOL(value) => bytes.push(*value as u8),
+                RawPacketField::BYTE(value) => bytes.push(*value as u8),
+                RawPacketField::UBYTE(value) => bytes.push(*value as u8),
+                RawPacketField::SHORT(value) => bytes.extend(value.to_be_bytes()),
+                RawPacketField::USHORT(value) => bytes.extend(value.to_be_bytes()),
+                RawPacketField::INT(value) => bytes.extend(value.to_be_bytes()),
+                RawPacketField::LONG(value) => bytes.extend(value.to_be_bytes()),
+                RawPacketField::FLOAT(value) => bytes.extend(value.to_be_bytes()),
+                RawPacketField::DOUBLE(value) => bytes.extend(value.to_be_bytes()),
+                RawPacketField::STRING(value) => {
+                    let value_bytes = value.as_bytes();
+                    VarInt::write_varint(&mut bytes, value_bytes.len() as i32);
+                    bytes.extend(value_bytes);
+                }
+                RawPacketField::VARINT(value) => VarInt::write_varint(&mut bytes, *value),
+                RawPacketField::VARLONG(value) => VarLong::write_varlong(&mut bytes, *value),
+            }
+        }
+        let mut buffer = Vec::new();
+        VarInt::write_varint(&mut buffer, bytes.len() as i32);
+        [buffer, bytes].concat()
     }
+}
 
+#[derive(Debug)]
+pub enum RawPacketField {
+    BOOL(bool),
+    BYTE(i8),
+    UBYTE(u8),
+    SHORT(i16),
+    USHORT(u16),
+    INT(i32),
+    LONG(i64),
+    FLOAT(f32),
+    DOUBLE(f64),
+    STRING(String),
+    VARINT(i32),
+    VARLONG(i64),
 }

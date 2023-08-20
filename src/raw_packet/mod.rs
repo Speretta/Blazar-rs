@@ -1,3 +1,5 @@
+pub mod packet;
+pub mod reader;
 mod tests;
-mod packet;
 mod types;
+pub mod writer;

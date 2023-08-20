@@ -25,7 +25,10 @@ mod var_int {
         VarInt::write_varint(&mut buffer, -1);
         VarInt::write_varint(&mut buffer, -2);
         VarInt::write_varint(&mut buffer, -127);
-        assert!(buffer.as_slice() == [255, 255, 255, 255, 15, 254, 255, 255, 255, 15, 129, 255, 255, 255, 15]);
+        assert!(
+            buffer.as_slice()
+                == [255, 255, 255, 255, 15, 254, 255, 255, 255, 15, 129, 255, 255, 255, 15]
+        );
     }
 
     #[test]
@@ -34,9 +37,11 @@ mod var_int {
         VarInt::write_varint(&mut buffer, -255);
         VarInt::write_varint(&mut buffer, -25565);
         VarInt::write_varint(&mut buffer, -2147483648);
-        assert!(buffer.as_slice() == [129, 254, 255, 255, 15, 163, 184, 254, 255, 15, 128, 128, 128, 128, 8]);
+        assert!(
+            buffer.as_slice()
+                == [129, 254, 255, 255, 15, 163, 184, 254, 255, 15, 128, 128, 128, 128, 8]
+        );
     }
-    
 }
 mod var_long {
     use crate::raw_packet::types::VarLong;
@@ -64,7 +69,13 @@ mod var_long {
         VarLong::write_varlong(&mut buffer, -1);
         VarLong::write_varlong(&mut buffer, -2);
         VarLong::write_varlong(&mut buffer, -127);
-        assert!(buffer.as_slice() == [255, 255, 255, 255, 255, 255, 255, 255, 255, 1, 254, 255, 255, 255, 255, 255, 255, 255, 255, 1, 129, 255, 255, 255, 255, 255, 255, 255, 255, 1]);
+        assert!(
+            buffer.as_slice()
+                == [
+                    255, 255, 255, 255, 255, 255, 255, 255, 255, 1, 254, 255, 255, 255, 255, 255,
+                    255, 255, 255, 1, 129, 255, 255, 255, 255, 255, 255, 255, 255, 1
+                ]
+        );
     }
 
     #[test]
@@ -73,7 +84,12 @@ mod var_long {
         VarLong::write_varlong(&mut buffer, -255);
         VarLong::write_varlong(&mut buffer, -25565);
         VarLong::write_varlong(&mut buffer, -2147483648);
-        assert!(buffer.as_slice() == [129, 254, 255, 255, 255, 255, 255, 255, 255, 1, 163, 184, 254, 255, 255, 255, 255, 255, 255, 1, 128, 128, 128, 128, 248, 255, 255, 255, 255, 1]);
+        assert!(
+            buffer.as_slice()
+                == [
+                    129, 254, 255, 255, 255, 255, 255, 255, 255, 1, 163, 184, 254, 255, 255, 255,
+                    255, 255, 255, 1, 128, 128, 128, 128, 248, 255, 255, 255, 255, 1
+                ]
+        );
     }
-    
 }

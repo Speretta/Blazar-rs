@@ -1,2 +1,2 @@
 mod raw_packet;
-mod minecraft_server;
+pub mod server;
