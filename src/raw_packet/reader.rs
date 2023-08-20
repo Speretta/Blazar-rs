@@ -1,7 +1,7 @@
-use crate::raw_packet::{
+use crate::{raw_packet::{
     packet::RawPacketField,
     types::{VarInt, VarLong},
-};
+}, util::uid::UUID};
 
 use super::packet::RawPacket;
 
@@ -84,6 +84,7 @@ impl RawPacketReader {
                         position += length;
                         RawPacketField::VARLONG(var_long)
                     }
+                    RawPacketFieldRead::UUID => RawPacketField::UUID(UUID::from_be_bytes(buffer[position..position+16].try_into().unwrap())),
                 };
                 position += get_size(&field);
 
@@ -107,6 +108,7 @@ pub enum RawPacketFieldRead {
     STRING,
     VARINT,
     VARLONG,
+    UUID,
 }
 
 fn get_size(field: &RawPacketField) -> usize {
@@ -123,5 +125,6 @@ fn get_size(field: &RawPacketField) -> usize {
         RawPacketField::STRING(_) => 0,
         RawPacketField::VARINT(_) => 0,
         RawPacketField::VARLONG(_) => 0,
+        RawPacketField::UUID(_) => 16,
     }
 }

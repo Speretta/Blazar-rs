@@ -1,7 +1,7 @@
-use crate::raw_packet::{
+use crate::{raw_packet::{
     packet::RawPacketField,
     types::{VarInt, VarLong},
-};
+}, util::uid::UUID};
 
 use super::packet::RawPacket;
 
@@ -37,6 +37,7 @@ impl RawPacketWriter {
                 RawPacketFieldWrite::STRING(value) => RawPacketField::STRING(value),
                 RawPacketFieldWrite::VARINT(value) => RawPacketField::VARINT(value),
                 RawPacketFieldWrite::VARLONG(value) => RawPacketField::VARLONG(value),
+                RawPacketFieldWrite::UUID(value) => RawPacketField::UUID(value),
             })
             .collect();
 
@@ -57,4 +58,5 @@ pub enum RawPacketFieldWrite {
     STRING(String),
     VARINT(i32),
     VARLONG(i64),
+    UUID(UUID),
 }

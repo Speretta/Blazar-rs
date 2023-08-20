@@ -1,3 +1,5 @@
+use crate::util::uid::UUID;
+
 use super::{
     reader::RawPacketReader,
     types::{VarInt, VarLong},
@@ -59,6 +61,7 @@ impl RawPacket {
                 }
                 RawPacketField::VARINT(value) => VarInt::write_varint(&mut bytes, *value),
                 RawPacketField::VARLONG(value) => VarLong::write_varlong(&mut bytes, *value),
+                RawPacketField::UUID(value) => bytes.extend(value.to_be_bytes()),
             }
         }
         let mut buffer = Vec::new();
@@ -81,4 +84,5 @@ pub enum RawPacketField {
     STRING(String),
     VARINT(i32),
     VARLONG(i64),
+    UUID(UUID)
 }

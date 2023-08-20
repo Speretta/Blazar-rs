@@ -6,7 +6,6 @@ use crate::raw_packet::{
 fn creation_reader() {
     let buffer = [1, 0];
     let packet = RawPacketCreator::new_reader().build(&buffer);
-    dbg!(&packet);
     assert!(packet.to_bytes() == buffer)
 }
 
