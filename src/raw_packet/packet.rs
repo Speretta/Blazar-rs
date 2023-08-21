@@ -64,9 +64,16 @@ impl RawPacket {
                 RawPacketField::UUID(value) => bytes.extend(value.to_be_bytes()),
             }
         }
+        let mut tail_length = 0;
+        for byte in bytes.iter().rev() {
+            if *byte != 0 {
+                break;
+            }
+            tail_length += 1;
+        }
         let mut buffer = Vec::new();
-        VarInt::write_varint(&mut buffer, bytes.len() as i32);
-        [buffer, bytes].concat()
+        VarInt::write_varint(&mut buffer, (&bytes.len() - tail_length) as i32);
+        [buffer, bytes[..bytes.len() - tail_length].to_vec()].concat() //[buffer, bytes[..bytes.len()-tail_length].to_vec()].concat()
     }
 }
 
@@ -84,5 +91,5 @@ pub enum RawPacketField {
     STRING(String),
     VARINT(i32),
     VARLONG(i64),
-    UUID(UUID)
+    UUID(UUID),
 }
