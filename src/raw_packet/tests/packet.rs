@@ -15,10 +15,10 @@ fn big_reader() {
         16, 0, 251, 5, 9, 108, 111, 99, 97, 108, 104, 111, 115, 116, 99, 221, 1,
     ];
     let packet = RawPacketCreator::new_reader()
-        .add_field(RawPacketFieldRead::VARINT)
-        .add_field(RawPacketFieldRead::STRING)
-        .add_field(RawPacketFieldRead::USHORT)
-        .add_field(RawPacketFieldRead::VARINT)
+        .add_field(RawPacketFieldRead::VarInt)
+        .add_field(RawPacketFieldRead::String)
+        .add_field(RawPacketFieldRead::UShort)
+        .add_field(RawPacketFieldRead::VarInt)
         .build(&buffer);
     assert!(packet.to_bytes() == buffer)
 }
@@ -36,10 +36,10 @@ fn big_writer() {
         16, 0, 251, 5, 9, 108, 111, 99, 97, 108, 104, 111, 115, 116, 99, 221, 1,
     ];
     let packet = RawPacketCreator::new_writer(0)
-        .add_field(RawPacketFieldWrite::VARINT(763))
-        .add_field(RawPacketFieldWrite::STRING(String::from("localhost")))
-        .add_field(RawPacketFieldWrite::USHORT(25565))
-        .add_field(RawPacketFieldWrite::VARINT(1))
+        .add_field(RawPacketFieldWrite::VarInt(763))
+        .add_field(RawPacketFieldWrite::String(String::from("localhost")))
+        .add_field(RawPacketFieldWrite::UShort(25565))
+        .add_field(RawPacketFieldWrite::VarInt(1))
         .build();
     assert!(packet.to_bytes() == buffer)
 }

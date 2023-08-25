@@ -15,7 +15,7 @@ pub struct RawPacketReader {
 impl RawPacketReader {
     pub(super) fn new() -> Self {
         RawPacketReader {
-            fields: vec![RawPacketFieldRead::VARINT],
+            fields: vec![RawPacketFieldRead::VarInt],
         }
     }
 
@@ -27,7 +27,7 @@ impl RawPacketReader {
     pub fn build(self, buffer: &[u8]) -> RawPacket {
         let mut position = 0usize;
         let packet_size = {
-            let (length, var_int) = VarInt::read_varint(&buffer);
+            let (length, var_int) = VarInt::read_varint(buffer);
             position += length;
             var_int as usize + length
         };
@@ -48,46 +48,46 @@ impl RawPacketReader {
                 );
 
                 let field = match field {
-                    RawPacketFieldRead::BOOL => RawPacketField::BOOL(buffer[position] != 0),
-                    RawPacketFieldRead::BYTE => RawPacketField::BYTE(buffer[position] as i8),
-                    RawPacketFieldRead::UBYTE => RawPacketField::UBYTE(buffer[position]),
-                    RawPacketFieldRead::SHORT => RawPacketField::SHORT(i16::from_be_bytes(
+                    RawPacketFieldRead::Bool => RawPacketField::Bool(buffer[position] != 0),
+                    RawPacketFieldRead::Byte => RawPacketField::Byte(buffer[position] as i8),
+                    RawPacketFieldRead::UByte => RawPacketField::UByte(buffer[position]),
+                    RawPacketFieldRead::Short => RawPacketField::Short(i16::from_be_bytes(
                         buffer[position..position + 2].try_into().unwrap(),
                     )),
-                    RawPacketFieldRead::USHORT => RawPacketField::USHORT(u16::from_be_bytes(
+                    RawPacketFieldRead::UShort => RawPacketField::UShort(u16::from_be_bytes(
                         buffer[position..position + 2].try_into().unwrap(),
                     )),
-                    RawPacketFieldRead::INT => RawPacketField::INT(i32::from_be_bytes(
+                    RawPacketFieldRead::Int => RawPacketField::Int(i32::from_be_bytes(
                         buffer[position..position + 4].try_into().unwrap(),
                     )),
-                    RawPacketFieldRead::LONG => RawPacketField::LONG(i64::from_be_bytes(
+                    RawPacketFieldRead::Long => RawPacketField::Long(i64::from_be_bytes(
                         buffer[position..position + 8].try_into().unwrap(),
                     )),
-                    RawPacketFieldRead::FLOAT => RawPacketField::FLOAT(f32::from_be_bytes(
+                    RawPacketFieldRead::Float => RawPacketField::Float(f32::from_be_bytes(
                         buffer[position..position + 4].try_into().unwrap(),
                     )),
-                    RawPacketFieldRead::DOUBLE => RawPacketField::DOUBLE(f64::from_be_bytes(
+                    RawPacketFieldRead::Double => RawPacketField::Double(f64::from_be_bytes(
                         buffer[position..position + 8].try_into().unwrap(),
                     )),
-                    RawPacketFieldRead::STRING => {
+                    RawPacketFieldRead::String => {
                         let (length, var_int) = VarInt::read_varint(&buffer[position..]);
                         position += length + var_int as usize;
-                        RawPacketField::STRING(
+                        RawPacketField::String(
                             String::from_utf8_lossy(&buffer[position - var_int as usize..position])
                                 .to_string(),
                         )
                     }
-                    RawPacketFieldRead::VARINT => {
+                    RawPacketFieldRead::VarInt => {
                         let (length, var_int) = VarInt::read_varint(&buffer[position..]);
                         position += length;
-                        RawPacketField::VARINT(var_int)
+                        RawPacketField::VarInt(var_int)
                     }
-                    RawPacketFieldRead::VARLONG => {
+                    RawPacketFieldRead::VarLong => {
                         let (length, var_long) = VarLong::read_varlong(&buffer[position..]);
                         position += length;
-                        RawPacketField::VARLONG(var_long)
+                        RawPacketField::VarLong(var_long)
                     }
-                    RawPacketFieldRead::UUID => RawPacketField::UUID(UUID::from_be_bytes(
+                    RawPacketFieldRead::Uuid => RawPacketField::Uuid(UUID::from_be_bytes(
                         buffer[position..position + 16].try_into().unwrap(),
                     )),
                 };
@@ -101,35 +101,35 @@ impl RawPacketReader {
 }
 
 pub enum RawPacketFieldRead {
-    BOOL,
-    BYTE,
-    UBYTE,
-    SHORT,
-    USHORT,
-    INT,
-    LONG,
-    FLOAT,
-    DOUBLE,
-    STRING,
-    VARINT,
-    VARLONG,
-    UUID,
+    Bool,
+    Byte,
+    UByte,
+    Short,
+    UShort,
+    Int,
+    Long,
+    Float,
+    Double,
+    String,
+    VarInt,
+    VarLong,
+    Uuid,
 }
 
 fn get_size(field: &RawPacketField) -> usize {
     match field {
-        RawPacketField::BOOL(_) => 1,
-        RawPacketField::BYTE(_) => 1,
-        RawPacketField::UBYTE(_) => 1,
-        RawPacketField::SHORT(_) => 2,
-        RawPacketField::USHORT(_) => 2,
-        RawPacketField::INT(_) => 4,
-        RawPacketField::LONG(_) => 8,
-        RawPacketField::FLOAT(_) => 4,
-        RawPacketField::DOUBLE(_) => 8,
-        RawPacketField::STRING(_) => 0,
-        RawPacketField::VARINT(_) => 0,
-        RawPacketField::VARLONG(_) => 0,
-        RawPacketField::UUID(_) => 16,
+        RawPacketField::Bool(_) => 1,
+        RawPacketField::Byte(_) => 1,
+        RawPacketField::UByte(_) => 1,
+        RawPacketField::Short(_) => 2,
+        RawPacketField::UShort(_) => 2,
+        RawPacketField::Int(_) => 4,
+        RawPacketField::Long(_) => 8,
+        RawPacketField::Float(_) => 4,
+        RawPacketField::Double(_) => 8,
+        RawPacketField::String(_) => 0,
+        RawPacketField::VarInt(_) => 0,
+        RawPacketField::VarLong(_) => 0,
+        RawPacketField::Uuid(_) => 16,
     }
 }

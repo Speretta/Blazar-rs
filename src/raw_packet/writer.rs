@@ -15,7 +15,7 @@ pub struct RawPacketWriter {
 impl RawPacketWriter {
     pub(super) fn new(packet_id: i32) -> Self {
         assert!(packet_id >= 0, "Packet ID must not be negative");
-        RawPacketWriter { fields: Vec::new() }.add_field(RawPacketFieldWrite::VARINT(packet_id))
+        RawPacketWriter { fields: Vec::new() }.add_field(RawPacketFieldWrite::VarInt(packet_id))
     }
 
     pub fn add_field(mut self, field: RawPacketFieldWrite) -> Self {
@@ -31,38 +31,38 @@ impl RawPacketWriter {
 }
 
 pub enum RawPacketFieldWrite {
-    BOOL(bool),
-    BYTE(i8),
-    UBYTE(u8),
-    SHORT(i16),
-    USHORT(u16),
-    INT(i32),
-    LONG(i64),
-    FLOAT(f32),
-    DOUBLE(f64),
-    STRING(String),
-    VARINT(i32),
-    VARLONG(i64),
-    UUID(UUID),
+    Bool(bool),
+    Byte(i8),
+    UByte(u8),
+    Short(i16),
+    UShort(u16),
+    Int(i32),
+    Long(i64),
+    Float(f32),
+    Double(f64),
+    String(String),
+    VarInt(i32),
+    VarLong(i64),
+    Uuid(UUID),
 }
 
 impl From<RawPacketFieldWrite> for RawPacketField {
     fn from(value: RawPacketFieldWrite) -> Self {
         let field = value;
         match field {
-            RawPacketFieldWrite::BOOL(value) => RawPacketField::BOOL(value),
-            RawPacketFieldWrite::BYTE(value) => RawPacketField::BYTE(value),
-            RawPacketFieldWrite::UBYTE(value) => RawPacketField::UBYTE(value),
-            RawPacketFieldWrite::SHORT(value) => RawPacketField::SHORT(value),
-            RawPacketFieldWrite::USHORT(value) => RawPacketField::USHORT(value),
-            RawPacketFieldWrite::INT(value) => RawPacketField::INT(value),
-            RawPacketFieldWrite::LONG(value) => RawPacketField::LONG(value),
-            RawPacketFieldWrite::FLOAT(value) => RawPacketField::FLOAT(value),
-            RawPacketFieldWrite::DOUBLE(value) => RawPacketField::DOUBLE(value),
-            RawPacketFieldWrite::STRING(value) => RawPacketField::STRING(value),
-            RawPacketFieldWrite::VARINT(value) => RawPacketField::VARINT(value),
-            RawPacketFieldWrite::VARLONG(value) => RawPacketField::VARLONG(value),
-            RawPacketFieldWrite::UUID(value) => RawPacketField::UUID(value),
+            RawPacketFieldWrite::Bool(value) => RawPacketField::Bool(value),
+            RawPacketFieldWrite::Byte(value) => RawPacketField::Byte(value),
+            RawPacketFieldWrite::UByte(value) => RawPacketField::UByte(value),
+            RawPacketFieldWrite::Short(value) => RawPacketField::Short(value),
+            RawPacketFieldWrite::UShort(value) => RawPacketField::UShort(value),
+            RawPacketFieldWrite::Int(value) => RawPacketField::Int(value),
+            RawPacketFieldWrite::Long(value) => RawPacketField::Long(value),
+            RawPacketFieldWrite::Float(value) => RawPacketField::Float(value),
+            RawPacketFieldWrite::Double(value) => RawPacketField::Double(value),
+            RawPacketFieldWrite::String(value) => RawPacketField::String(value),
+            RawPacketFieldWrite::VarInt(value) => RawPacketField::VarInt(value),
+            RawPacketFieldWrite::VarLong(value) => RawPacketField::VarLong(value),
+            RawPacketFieldWrite::Uuid(value) => RawPacketField::Uuid(value),
         }
     }
 }
@@ -71,19 +71,19 @@ impl From<RawPacketField> for RawPacketFieldWrite {
     fn from(value: RawPacketField) -> Self {
         let field = value;
         match field {
-            RawPacketField::BOOL(value) => RawPacketFieldWrite::BOOL(value),
-            RawPacketField::BYTE(value) => RawPacketFieldWrite::BYTE(value),
-            RawPacketField::UBYTE(value) => RawPacketFieldWrite::UBYTE(value),
-            RawPacketField::SHORT(value) => RawPacketFieldWrite::SHORT(value),
-            RawPacketField::USHORT(value) => RawPacketFieldWrite::USHORT(value),
-            RawPacketField::INT(value) => RawPacketFieldWrite::INT(value),
-            RawPacketField::LONG(value) => RawPacketFieldWrite::LONG(value),
-            RawPacketField::FLOAT(value) => RawPacketFieldWrite::FLOAT(value),
-            RawPacketField::DOUBLE(value) => RawPacketFieldWrite::DOUBLE(value),
-            RawPacketField::STRING(value) => RawPacketFieldWrite::STRING(value),
-            RawPacketField::VARINT(value) => RawPacketFieldWrite::VARINT(value),
-            RawPacketField::VARLONG(value) => RawPacketFieldWrite::VARLONG(value),
-            RawPacketField::UUID(value) => RawPacketFieldWrite::UUID(value),
+            RawPacketField::Bool(value) => RawPacketFieldWrite::Bool(value),
+            RawPacketField::Byte(value) => RawPacketFieldWrite::Byte(value),
+            RawPacketField::UByte(value) => RawPacketFieldWrite::UByte(value),
+            RawPacketField::Short(value) => RawPacketFieldWrite::Short(value),
+            RawPacketField::UShort(value) => RawPacketFieldWrite::UShort(value),
+            RawPacketField::Int(value) => RawPacketFieldWrite::Int(value),
+            RawPacketField::Long(value) => RawPacketFieldWrite::Long(value),
+            RawPacketField::Float(value) => RawPacketFieldWrite::Float(value),
+            RawPacketField::Double(value) => RawPacketFieldWrite::Double(value),
+            RawPacketField::String(value) => RawPacketFieldWrite::String(value),
+            RawPacketField::VarInt(value) => RawPacketFieldWrite::VarInt(value),
+            RawPacketField::VarLong(value) => RawPacketFieldWrite::VarLong(value),
+            RawPacketField::Uuid(value) => RawPacketFieldWrite::Uuid(value),
         }
     }
 }
@@ -92,19 +92,19 @@ impl From<&RawPacketField> for RawPacketFieldWrite {
     fn from(value: &RawPacketField) -> Self {
         let field = value;
         match field {
-            RawPacketField::BOOL(value) => RawPacketFieldWrite::BOOL(*value),
-            RawPacketField::BYTE(value) => RawPacketFieldWrite::BYTE(*value),
-            RawPacketField::UBYTE(value) => RawPacketFieldWrite::UBYTE(*value),
-            RawPacketField::SHORT(value) => RawPacketFieldWrite::SHORT(*value),
-            RawPacketField::USHORT(value) => RawPacketFieldWrite::USHORT(*value),
-            RawPacketField::INT(value) => RawPacketFieldWrite::INT(*value),
-            RawPacketField::LONG(value) => RawPacketFieldWrite::LONG(*value),
-            RawPacketField::FLOAT(value) => RawPacketFieldWrite::FLOAT(*value),
-            RawPacketField::DOUBLE(value) => RawPacketFieldWrite::DOUBLE(*value),
-            RawPacketField::STRING(value) => RawPacketFieldWrite::STRING(value.clone()),
-            RawPacketField::VARINT(value) => RawPacketFieldWrite::VARINT(*value),
-            RawPacketField::VARLONG(value) => RawPacketFieldWrite::VARLONG(*value),
-            RawPacketField::UUID(value) => RawPacketFieldWrite::UUID(*value),
+            RawPacketField::Bool(value) => RawPacketFieldWrite::Bool(*value),
+            RawPacketField::Byte(value) => RawPacketFieldWrite::Byte(*value),
+            RawPacketField::UByte(value) => RawPacketFieldWrite::UByte(*value),
+            RawPacketField::Short(value) => RawPacketFieldWrite::Short(*value),
+            RawPacketField::UShort(value) => RawPacketFieldWrite::UShort(*value),
+            RawPacketField::Int(value) => RawPacketFieldWrite::Int(*value),
+            RawPacketField::Long(value) => RawPacketFieldWrite::Long(*value),
+            RawPacketField::Float(value) => RawPacketFieldWrite::Float(*value),
+            RawPacketField::Double(value) => RawPacketFieldWrite::Double(*value),
+            RawPacketField::String(value) => RawPacketFieldWrite::String(value.clone()),
+            RawPacketField::VarInt(value) => RawPacketFieldWrite::VarInt(*value),
+            RawPacketField::VarLong(value) => RawPacketFieldWrite::VarLong(*value),
+            RawPacketField::Uuid(value) => RawPacketFieldWrite::Uuid(*value),
         }
     }
 }
